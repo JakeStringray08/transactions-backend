@@ -1,4 +1,4 @@
-import TransactionsService from '../services/transactionsSrv';
+import TransactionsService from '../services/transactions';
 
 const transactionsService = new TransactionsService();
 

@@ -1,5 +1,5 @@
-import { TransactionTypes } from "../models/transactionModel.mjs";
-import {RefusedTransactionError, TransactionNotFoundError} from "../errors"
+import { TransactionTypes } from "../models/transaction.js";
+import {RefusedTransactionError, TransactionNotFoundError} from "../errors/index"
 
 export default class TransactionsService {
 
