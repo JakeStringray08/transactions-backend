@@ -1,6 +1,7 @@
 import Joi from "joi";
 import uuid from 'uuid/v1';
 import { InvalidInputError } from "../errors";
+import { throws } from "assert";
 
 
 export const TransactionTypes = {
@@ -15,12 +16,21 @@ export const TransactionStatus = {
 
 export default class Transaction {
 
+    static idValidationSchema = Joi.string().uuid();
+
+    static validationSchema = Joi.object().keys({
+        id: Transaction.idValidationSchema,
+        type: Joi.string().regex(new RegExp(`${TransactionTypes.CREDIT}|${TransactionTypes.DEBIT}`)).required(),
+        amount: Joi.number().required(),
+        effectiveDate: Joi.date().iso()
+    }).exist();
+
     constructor(dataObj) {
         this._validate(dataObj);
 
         this._id = dataObj.id || uuid();
         this._type = dataObj.type;
-        this._amount = dataObj.amount;
+        this._amount = parseFloat(dataObj.amount);
         this._effectiveDate = dataObj.effectiveDate || new Date().toISOString();
 
         this._status = TransactionStatus.ACTIVE;
@@ -45,6 +55,13 @@ export default class Transaction {
         return this._type;
     }
 
+    set type(transactionType) {
+        if ([TransactionTypes.CREDIT, TransactionTypes.DEBIT].indexOf(transactionType) === -1) {
+            throw new InvalidInputError();
+        }
+        this._type = transactionType;
+    }
+
     get effectiveDate() {
         return this._effectiveDate;
     }
@@ -67,11 +84,22 @@ export default class Transaction {
     revert() {
         this._status = TransactionStatus.REVERTED;
     }
-}
 
-Transaction.validationSchema = Joi.object().keys({
-    id: Joi.string().uuid(),
-    type: Joi.string().regex(new RegExp(`${TransactionTypes.CREDIT}|${TransactionTypes.DEBIT}`)).required(),
-    amount: Joi.number().required(),
-    effectiveData: Joi.date().iso()
-}).exist();
+    clone() {
+        return new this.constructor({
+            id: this.id,
+            type: this.type,
+            amount: this.amount,
+            effectiveDate: this.effectiveDate
+        });
+    }
+
+    toJSON() {
+        return {
+            id: this.id,
+            type: this.type,
+            amount: this.amount,
+            effectiveDate: this.effectiveDate
+        }
+    }
+}

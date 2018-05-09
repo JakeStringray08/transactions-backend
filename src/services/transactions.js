@@ -1,62 +1,39 @@
-import { TransactionTypes } from "../models/transaction.js";
-import {RefusedTransactionError, TransactionNotFoundError} from "../errors/index"
+import TransactionsHistory from '../models/transactions-history';
+import Transaction from '../models/transaction';
 
 export default class TransactionsService {
-
     constructor() {
-        this._history = [];  
-    }
-    
-    getAllTransactions() {
-        return this._history;
+        this.history = new TransactionsHistory();
     }
 
-    addTransaction(newTransaction) {
-        this._checkTransaction(newTransaction);
-        this._history.push(newTransaction);
+    getTransactions = (req, resp) => {
+        const all = this.history.getAllTransactions();
+        return resp.json(all);
     }
 
-    getTransactionById(transactionId) {
-        return this._history.find((transaction) => {
-            return transaction.id === transactionId;
-        })
+    getTransaction = (req, resp) => {
+        const { transactionId } = req.params;    
+        const transaction = this.history.getTransactionById(transactionId);
+        resp.json(transaction);
     }
 
-    getTransactionAt(index) {
-        return this._history[index];
+    postTransaction = (req, resp) => {
+        const newTransaction = new Transaction(req.body);
+        const added = this.history.addTransaction(newTransaction);
+        resp.status(201).json(added);
     }
 
-    deleteTransactionById(transactionId) {
-        const deleteIndex = this._history.findIndex((transaction) => {
-            return transaction.id === transactionId;
-        });
+    deleteTransaction = (req, resp) => {
+        const { transactionId } = req.params;
 
-        if (deleteIndex === -1) {
-            throw new TransactionNotFoundError();
-        }
-
-        this.deleteTransactionAt(deleteIndex);
+        this.history.deleteTransactionById(transactionId);
+        resp.status(200).end();
     }
 
-    deleteTransactionAt(index) {
-        this._history.splice(index, 1);
-    }
-
-    getBalance() {
-        return this._history
-            .reduce((acc, transaction) => {
-                return acc + transaction.getEffectiveAmount();
-            }, TransactionsService.INITIAL_BALANCE);
-    }
-
-    _checkTransaction(transaction) {
-        const balance = this.getBalance();
-        const balanceAfterTransaction = balance + transaction.getEffectiveAmount();
-
-        if (balanceAfterTransaction < 0) {
-            throw new RefusedTransactionError();
-        }
+    setupRoutes(router) {
+        router.get('/', this.getTransactions);
+        router.get('/:transactionId', this.getTransaction);
+        router.post('/', this.postTransaction);
+        router.delete('/:transactionId', this.deleteTransaction);
     }
 }
-
-TransactionsService.INITIAL_BALANCE = 0;
