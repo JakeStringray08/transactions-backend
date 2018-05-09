@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require babel-register src/**/**.spec.js",
-    "start": "node scripts/start-dev.js"
+    "test": "mocha --exit --require babel-register --timeout 5000 src/**/**.spec.js test/**.test.js",
+    "dev": "node src",
+    "compile": "rm -rf dist/ && babel src --out-dir dist --ignore spec.js,test.js",
+    "start": "node ./dist/app.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,7 @@
     "babel-register": "^6.26.0",
     "chai": "^4.1.2",
     "faker": "^4.1.0",
-    "mocha": "^5.1.1"
+    "mocha": "^5.1.1",
+    "supertest": "^3.0.0"
   }
 }

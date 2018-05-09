@@ -1,0 +1,26 @@
+[
+    {
+        "id": "168db410-5373-11e8-bfe5-336966143515",
+        "type": "credit",
+        "amount": 200,
+        "effectiveDate": "2018-05-09T10:23:59.953Z"
+    },
+    {
+        "id": "190df650-5373-11e8-bfe5-336966143515",
+        "type": "credit",
+        "amount": 200,
+        "effectiveDate": "2018-05-09T10:24:04.149Z"
+    },
+    {
+        "id": "1a3649b0-5373-11e8-bfe5-336966143515",
+        "type": "credit",
+        "amount": 200,
+        "effectiveDate": "2018-05-09T10:24:06.091Z"
+    },
+    {
+        "id": "1a3649b0-5373-11e8-bfe5-339966143515",
+        "type": "debit",
+        "amount": 600,
+        "effectiveDate": "2018-05-09T10:24:06.091Z"
+    }
+]

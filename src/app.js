@@ -24,4 +24,7 @@ app.use(function (err, req, res, next) {
     res.status(500).send('Server error: ' + err.message);
 });
 
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`App listening on port ${port}!`));
+
 export default app;
